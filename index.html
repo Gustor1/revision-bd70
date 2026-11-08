@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Révisions BD70</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--txt:#1d2333;--mut:#667;--pri:#2f5bd3;--ok:#1a8a4a;--ko:#c0392b;--bd:#dde1ea;--code:#f0f2f7}
+@media (prefers-color-scheme:dark){:root{--bg:#14171f;--card:#1d212c;--txt:#e6e8ee;--mut:#9aa;--pri:#7c9cff;--ok:#4cd28a;--ko:#ff7b6b;--bd:#30364a;--code:#262b38}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.5 system-ui,Segoe UI,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--bd)}
+nav{display:flex;gap:4px;overflow-x:auto;padding:8px 12px;max-width:1000px;margin:auto}
+nav a{padding:6px 10px;border-radius:8px;text-decoration:none;color:var(--txt);white-space:nowrap;font-size:14px}
+nav a.on{background:var(--pri);color:#fff}
+main{max-width:1000px;margin:auto;padding:16px}
+h1{font-size:1.6rem}a{color:var(--pri)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px 16px;margin:12px 0}
+.card.done{border-left:4px solid var(--ok)}
+pre,code,textarea{font-family:Consolas,ui-monospace,monospace}
+pre{background:var(--code);padding:10px;border-radius:8px;overflow-x:auto;font-size:14px;white-space:pre-wrap}
+code{background:var(--code);padding:1px 4px;border-radius:4px}
+textarea{width:100%;min-height:90px;background:var(--code);color:var(--txt);border:1px solid var(--bd);border-radius:8px;padding:8px;font-size:15px}
+textarea.free{font-family:inherit}
+.btns{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+a.btn{display:inline-block;text-decoration:none;padding:7px 12px;border-radius:8px;font-size:14px}a.btn.primary{background:var(--pri);color:#fff}
+button{padding:7px 12px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--txt);cursor:pointer;font-size:14px}
+button.primary{background:var(--pri);color:#fff;border-color:var(--pri)}
+.qhead{display:flex;gap:10px;align-items:flex-start}.num{background:var(--pri);color:#fff;border-radius:50%;min-width:26px;height:26px;display:grid;place-items:center;font-size:13px}
+.q{flex:1}.badge{color:var(--ok);font-weight:600;white-space:nowrap}
+.ok{color:var(--ok);font-weight:600}.ko{color:var(--ko);font-weight:600}.muted{color:var(--mut);font-size:14px}
+.note{background:var(--code);border-left:3px solid var(--pri);padding:6px 10px;border-radius:6px}
+.tip{background:var(--code);border-left:3px solid var(--ok);padding:6px 10px;border-radius:6px}
+.warn{background:var(--code);border-left:3px solid #e0a000;padding:6px 10px;border-radius:6px}
+.src{color:var(--mut);font-size:13px}
+.expl{margin-top:8px}.tw{overflow-x:auto}
+table.res,table.mini{border-collapse:collapse;font-size:14px;margin:6px 0}
+.res th,.res td,.mini th,.mini td{border:1px solid var(--bd);padding:4px 8px;text-align:left;vertical-align:top}
+.res th,.mini th{background:var(--code)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+a.lvl{display:block;text-decoration:none;color:var(--txt)}a.lvl span{float:right;color:var(--mut)}
+.bar{height:6px;background:var(--code);border-radius:3px;margin-top:8px}.bar i{display:block;height:100%;background:var(--ok);border-radius:3px}
+.schema{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.tbl{background:var(--code);padding:4px 8px;border-radius:6px;font:13px Consolas,monospace}
+.opts{display:flex;flex-direction:column;gap:6px}.opts button{text-align:left}
+button.good{background:var(--ok);color:#fff}button.bad{background:var(--ko);color:#fff}
+.pts label{display:block;margin:3px 0}.big{font-size:1.2rem;font-weight:600}
+.timer{position:sticky;top:52px;z-index:4;display:flex;gap:8px;align-items:center}#clock{font:600 1.3rem monospace;margin-right:auto}
+.nav{display:flex;justify-content:space-between}select{padding:6px;border-radius:8px;font-size:15px}
+details summary{cursor:pointer;color:var(--pri);margin-top:6px}
+@media print{header,button,.warn{display:none}body{background:#fff;color:#000}.a4 pre{font-size:9px}}
+</style></head>
+<body><header><nav>
+<a href="#accueil">Accueil</a><a href="#parcours">Parcours SQL</a><a href="#conception">Conception</a><a href="#theorie">Théorie</a><a href="#sujets">Sujets blancs</a><a href="#bac">Bac à sable</a><a href="#a4">Feuille A4</a><a href="#couverture">Couverture</a><a href="#sites">Sites</a>
+</nav></header>
+<main id="main"><p>Chargement du moteur SQL…</p></main>
+<script src="js/dbs.js?v=5"></script><script src="js/content-sql.js?v=5"></script><script src="js/content-theory.js?v=5"></script>
+<script>
+/* Moteur SQL : copie locale (vendor/, hors-ligne) sinon CDN. */
+(function load(srcs){
+  const s = document.createElement("script"); const base = srcs[0];
+  s.src = base + "sql-wasm.js";
+  const app = () => { const a = document.createElement("script"); a.src = "js/app.js?v=5"; document.body.appendChild(a); };
+  s.onload = () => {
+    window.SQLJS_BASE = base;
+    if (location.protocol === "file:" && base === "vendor/") {   // double-clic : wasm embarqué
+      const w = document.createElement("script"); w.src = "vendor/sql-wasm-b64.js"; w.onload = app; w.onerror = app; document.body.appendChild(w);
+    } else app();
+  };
+  s.onerror = () => srcs.length > 1 ? load(srcs.slice(1)) : (document.getElementById("main").innerHTML = "<p>Impossible de charger le moteur SQL : connecte-toi à internet au moins une fois, ou ajoute sql.js dans le dossier vendor/.</p>");
+  document.body.appendChild(s);
+})(["vendor/", "https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/"]);
+</script>
+</body></html>
