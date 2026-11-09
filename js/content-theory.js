@@ -337,6 +337,7 @@ window.COUVERTURE = [
 ["Fonctions, procédures, triggers, événements, DELIMITER","Annale ex.3c-d ; TD Automatisation ex.1-3 ; cours slides 135-153","Théorie : tableau de choix + 5 questions ouvertes avec code ; QCM ; ex.3c-d des sujets"],
 ["Transactions (ACID, COMMIT, ROLLBACK)","TD Automatisation ex.3.5 ; cours slides 159-165","Théorie : question ouverte « virement » ; QCM ; sujet B1 ex.3c"],
 ["DCL : GRANT/REVOKE, sécurité, mots de passe hachés","TD DDL ex.3 ; cours slides 155-158, 236-240","Théorie : question ouverte « droits d'accès » ; QCM q02, q31, q32 ; feuille A4"],
+["Exercice 2 de l'annale : questions sur la base Soccer","Annale ex.2 ; site w3resource (Soccer Database, d'où viennent Q3 et Q4 de l'annale)","Sujets blancs → 3 séries (47 questions auto-corrigées) ; parcours niveau 11 ; ex.2 de A23 et du sujet n°1"],
 ["Cas d'utilisation UML (TD7 ex.1), frameworks web, Spring (fin du cours)","TD7 ex.1 ; cours slides 205-210 et 250-261","<i>Non couvert par des exercices</i> : absent de l'annale A23 (que le prof annonce similaire)"]
 ];
 

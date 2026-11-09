@@ -74,7 +74,7 @@ INSERT INTO inscription VALUES
 
 DBS.soccer = {
   label: "Soccer — Euro 2016 (annale A23)",
-  desc: "Même schéma que l'annale (tables principales). Données réduites et simplifiées : 8 équipes, 9 matchs.",
+  desc: "Même schéma que l'annale (ses 18 tables). Données réduites et en partie inventées : 8 équipes, 9 matchs.",
   sql: `
 CREATE TABLE soccer_country (country_id INTEGER PRIMARY KEY, country_abbr TEXT COLLATE NOCASE, country_name TEXT COLLATE NOCASE);
 CREATE TABLE soccer_city (city_id INTEGER PRIMARY KEY, city TEXT COLLATE NOCASE, country_id INT REFERENCES soccer_country(country_id));
@@ -92,7 +92,7 @@ CREATE TABLE match_captain (match_no INT REFERENCES match_mast(match_no), team_i
 CREATE TABLE player_booked (match_no INT REFERENCES match_mast(match_no), team_id INT REFERENCES soccer_country(country_id), player_id INT REFERENCES player_mast(player_id), booking_time INT, sent_off TEXT COLLATE NOCASE, play_schedule TEXT COLLATE NOCASE, play_half INT);
 CREATE TABLE penalty_gk (match_no INT REFERENCES match_mast(match_no), team_id INT REFERENCES soccer_country(country_id), player_gk INT REFERENCES player_mast(player_id));
 
-INSERT INTO soccer_country VALUES (1,'FRA','France'),(2,'POR','Portugal'),(3,'GER','Allemagne'),(4,'WAL','Pays de Galles'),(5,'BEL','Belgique'),(6,'ITA','Italie'),(7,'ISL','Islande'),(8,'ESP','Espagne'),(9,'ENG','Angleterre'),(10,'NED','Pays-Bas'),(11,'SWE','Suède');
+INSERT INTO soccer_country VALUES (1,'FRA','France'),(2,'POR','Portugal'),(3,'GER','Allemagne'),(4,'WAL','Pays de Galles'),(5,'BEL','Belgique'),(6,'ITA','Italie'),(7,'ISL','Islande'),(8,'ESP','Espagne'),(9,'ENG','Angleterre'),(10,'NED','Pays-Bas'),(11,'SWE','Suède'),(12,'TUR','Turquie'),(13,'HUN','Hongrie');
 INSERT INTO soccer_city VALUES (1,'Saint-Denis',1),(2,'Marseille',1),(3,'Lyon',1),(4,'Lille',1),(5,'Bordeaux',1),(6,'Paris',1),(7,'Saint-Étienne',1);
 INSERT INTO soccer_venue VALUES (1,'Stade de France',1,80100),(2,'Stade Vélodrome',2,67394),(3,'Stade de Lyon',3,59186),(4,'Stade Pierre Mauroy',4,50186),(5,'Stade de Bordeaux',5,42115),(6,'Parc des Princes',6,47294),(7,'Stade Geoffroy-Guichard',7,41965);
 INSERT INTO soccer_team VALUES
@@ -143,7 +143,7 @@ INSERT INTO player_mast VALUES
 (41,4,18,'Sam Vokes','FD','1989-10-21',26,'Burnley'),
 (42,3,8,'Mesut Ozil','MF','1988-10-15',27,'Arsenal'),
 (43,7,8,'Birkir Bjarnason','MF','1988-05-27',28,'Bâle');
-INSERT INTO referee_mast VALUES (1,'Mark Clattenburg',9),(2,'Björn Kuipers',10),(3,'Jonas Eriksson',11),(4,'Viktor Kassai',NULL),(5,'Cüneyt Çakir',NULL);
+INSERT INTO referee_mast VALUES (1,'Mark Clattenburg',9),(2,'Björn Kuipers',10),(3,'Jonas Eriksson',11),(4,'Viktor Kassai',13),(5,'Cüneyt Çakir',12);
 INSERT INTO coach_mast VALUES (1,'Didier Deschamps'),(2,'Fernando Santos'),(3,'Joachim Löw'),(4,'Chris Coleman'),(5,'Marc Wilmots'),(6,'Antonio Conte'),(7,'Lars Lagerbäck'),(8,'Heimir Hallgrimsson'),(9,'Vicente del Bosque');
 INSERT INTO team_coaches VALUES (1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7),(7,8),(8,9);
 INSERT INTO match_mast VALUES
@@ -179,6 +179,24 @@ INSERT INTO goal_details VALUES
 INSERT INTO match_captain VALUES (1,5,23),(1,6,26),(2,2,9),(2,7,31),(3,6,26),(3,8,35),(4,4,40),(4,5,23),(5,3,13),(5,6,26),(6,1,1),(6,7,31),(7,2,9),(7,4,40),(8,3,13),(8,1,1),(9,2,9),(9,1,1);
 INSERT INTO player_booked VALUES (1,5,39,30,'N','NT',1),(1,6,27,54,'N','NT',2),(4,4,20,24,'N','NT',1),(4,5,23,75,'N','NT',2),(5,6,38,40,'N','NT',1),(6,7,31,62,'N','NT',2),(8,3,15,43,'N','NT',1),(8,1,3,85,'N','NT',2),(9,2,8,62,'N','NT',2),(9,1,3,80,'N','NT',2),(9,2,12,100,'N','ET',2),(3,8,35,88,'Y','NT',2);
 INSERT INTO penalty_gk VALUES (5,3,13),(5,6,26);
+
+CREATE TABLE asst_referee_mast (ass_ref_id INTEGER PRIMARY KEY, ass_ref_name TEXT COLLATE NOCASE, country_id INT REFERENCES soccer_country(country_id));
+INSERT INTO asst_referee_mast VALUES (1,'Simon Beck',9),(2,'Jake Collin',9),(3,'Sander van Roekel',10),(4,'Erwin Zeinstra',10),(5,'Mathias Klasenius',11),(6,'Daniel Warnmark',11),(7,'Bahattin Duran',12),(8,'Tarik Ongun',12),(9,'György Ring',13),(10,'Vencel Tóth',13);
+ALTER TABLE match_details ADD ass_ref INT REFERENCES asst_referee_mast(ass_ref_id);
+UPDATE match_details SET ass_ref = CASE match_no*100+team_id
+  WHEN 105 THEN 3 WHEN 106 THEN 4 WHEN 202 THEN 5 WHEN 207 THEN 6 WHEN 306 THEN 7 WHEN 308 THEN 8
+  WHEN 404 THEN 3 WHEN 405 THEN 4 WHEN 503 THEN 9 WHEN 506 THEN 10 WHEN 601 THEN 3 WHEN 607 THEN 4
+  WHEN 702 THEN 5 WHEN 704 THEN 6 WHEN 803 THEN 7 WHEN 801 THEN 8 WHEN 902 THEN 1 WHEN 901 THEN 2 END;
+CREATE TABLE penalty_shootout (kick_id INTEGER PRIMARY KEY, match_no INT REFERENCES match_mast(match_no), team_id INT REFERENCES soccer_country(country_id), player_id INT REFERENCES player_mast(player_id), score_goal TEXT COLLATE NOCASE, kick_no INT);
+INSERT INTO penalty_shootout VALUES
+(1,5,6,29,'Y',1),(2,5,3,15,'Y',2),(3,5,6,28,'N',3),(4,5,3,17,'N',4),(5,5,6,27,'N',5),(6,5,3,42,'N',6),
+(7,5,6,38,'Y',7),(8,5,3,14,'Y',8),(9,5,6,26,'Y',9),(10,5,3,16,'Y',10),(11,5,6,29,'Y',11),(12,5,3,13,'Y',12),
+(13,5,6,28,'Y',13),(14,5,3,15,'Y',14),(15,5,6,27,'N',15),(16,5,3,17,'N',16),(17,5,6,38,'N',17),(18,5,3,42,'Y',18);
+CREATE TABLE player_in_out (match_no INT REFERENCES match_mast(match_no), team_id INT REFERENCES soccer_country(country_id), player_id INT REFERENCES player_mast(player_id), in_out TEXT COLLATE NOCASE, time_in_out INT, play_schedule TEXT COLLATE NOCASE, play_half INT);
+INSERT INTO player_in_out VALUES
+(9,2,9,'O',25,'NT',1),(9,2,12,'I',25,'NT',1),(9,2,12,'O',79,'NT',2),(9,2,11,'I',79,'NT',2),
+(6,7,33,'O',46,'NT',2),(6,7,43,'I',46,'NT',2),(4,4,21,'O',75,'NT',2),(4,4,41,'I',75,'NT',2),
+(8,3,17,'O',45,'ST',1),(8,3,16,'I',45,'ST',1),(5,6,29,'O',120,'ET',2),(5,6,28,'I',120,'ET',2);
 `};
 
 DBS.vide = {

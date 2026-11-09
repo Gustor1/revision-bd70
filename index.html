@@ -56,13 +56,13 @@ table.mini{display:block;max-width:100%;overflow-x:auto}
 <a href="#accueil">Accueil</a><a href="#parcours">Parcours SQL</a><a href="#conception">Conception</a><a href="#theorie">Théorie</a><a href="#sujets">Sujets blancs</a><a href="#bac">Bac à sable</a><a href="#a4">Feuille A4</a><a href="#couverture">Couverture</a><a href="#sites">Sites</a>
 </nav></header>
 <main id="main"><p>Chargement du moteur SQL…</p></main>
-<script src="js/dbs.js?v=6"></script><script src="js/content-sql.js?v=6"></script><script src="js/content-theory.js?v=6"></script><script src="js/content-methode.js?v=6"></script>
+<script src="js/dbs.js?v=7"></script><script src="js/content-sql.js?v=7"></script><script src="js/content-theory.js?v=7"></script><script src="js/content-methode.js?v=7"></script><script src="js/content-w3.js?v=7"></script>
 <script>
 /* Moteur SQL : copie locale (vendor/, hors-ligne) sinon CDN. */
 (function load(srcs){
   const s = document.createElement("script"); const base = srcs[0];
   s.src = base + "sql-wasm.js";
-  const app = () => { const a = document.createElement("script"); a.src = "js/app.js?v=6"; document.body.appendChild(a); };
+  const app = () => { const a = document.createElement("script"); a.src = "js/app.js?v=7"; document.body.appendChild(a); };
   s.onload = () => {
     window.SQLJS_BASE = base;
     if (location.protocol === "file:" && base === "vendor/") {   // double-clic : wasm embarqué

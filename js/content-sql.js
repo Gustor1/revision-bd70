@@ -112,7 +112,7 @@ CREATE VIEW v_sport AS SELECT * FROM produit WHERE id_categorie = 1;</pre>
 <li><code>match_details</code> : 2 lignes par match (une par équipe), <code>win_lose</code> = W / L / D</li>
 <li><code>goal_details</code> : 1 ligne par but (<code>goal_type</code> N normal, O contre son camp, P penalty)</li>
 <li><code>play_stage</code> : G groupes, R 8es, Q quarts, S demies, F finale</li></ul>
-<p class="tip">Données réduites (8 équipes, 9 matchs) et simplifiées : utile pour s'entraîner, pas pour réviser le foot 😉</p>`}
+<p class="tip">Données réduites (8 équipes, 9 matchs) et en partie inventées (tirs au but, remplacements, cartons) : utile pour s'entraîner, pas pour réviser le foot 😉</p>`}
 ];
 
 window.EXOS = [

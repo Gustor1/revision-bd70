@@ -146,7 +146,7 @@ function exoCard(ex, n) {
 const exo = id => EXOS.find(e => e.id === id);
 
 /* ---------- Pages ---------- */
-function progress() { const st = store.get(); const p = EXOS.filter(e => e.lvl !== "S"); return [p.filter(e => st["ok_" + e.id]).length, p.length]; }
+function progress() { const st = store.get(); const p = EXOS.filter(e => LEVELS.some(l => l.id === e.lvl)); return [p.filter(e => st["ok_" + e.id]).length, p.length]; }
 function refreshProgress() { const [a, b] = progress(); const el = $("#prog"); if (el) el.textContent = `${a}/${b} exercices SQL réussis`; }
 const PAGES = {
   accueil() {
@@ -164,7 +164,7 @@ const PAGES = {
 <li><a href="#theorie">Théorie</a> : méthode de réponse pour chaque type de question de l'exercice 3, 17 questions ouvertes corrigées, puis des QCM de révision rapide.</li>
 <li><a href="#sujets">Sujets blancs</a> : l'annale A23 puis 3 sujets inédits du même format, chrono 1h30.</li></ol>
 <p id="prog" class="big">${a}/${b} exercices SQL réussis</p>
-<div class="btns">${(() => { const st = store.get(); const nx = EXOS.find(e => e.lvl !== "S" && !st["ok_" + e.id]); return nx ? `<a class="btn primary" href="#niveau/${nx.lvl}">▶ Reprendre : ${LEVELS.find(l => l.id === nx.lvl).titre}</a>` : `<a class="btn primary" href="#sujets">Parcours terminé 🎉 → sujets blancs</a>`; })()}
+<div class="btns">${(() => { const st = store.get(); const nx = EXOS.find(e => LEVELS.some(l => l.id === e.lvl) && !st["ok_" + e.id]); return nx ? `<a class="btn primary" href="#niveau/${nx.lvl}">▶ Reprendre : ${LEVELS.find(l => l.id === nx.lvl).titre}</a>` : `<a class="btn primary" href="#sujets">Parcours terminé 🎉 → sujets blancs</a>`; })()}
 </div></div>
 <div class="card"><h3>Ma progression</h3><p class="muted">Elle est enregistrée <b>dans ce navigateur</b> (et conservée lors des mises à jour du site). Pour la garder en changeant d'appareil ou de navigateur, sauvegarde-la dans un fichier puis restaure-la de l'autre côté.</p>
 <div class="btns"><button onclick="exportProgress()">💾 Sauvegarder dans un fichier</button><label class="btn file">📂 Restaurer un fichier<input type="file" accept=".json,application/json" hidden onchange="importProgress(this)"></label>
@@ -205,14 +205,25 @@ ${ths.map(t => `<h3>${t}</h3>` + THEORIE_EXOS.filter(x => x.th === t).map(x => o
   },
   sujets() {
     return `<h1>Sujets blancs</h1><p>Même format que l'annale A23. Fais-les en conditions réelles : chrono 1h30, ta feuille A4, puis correction.</p>` +
-      SUJETS.map(s => `<a class="card lvl" href="#sujet/${s.id}"><b>${s.titre}</b></a>`).join("");
+      SUJETS.map(s => `<a class="card lvl" href="#sujet/${s.id}"><b>${s.titre}</b></a>`).join("") +
+      `<h2>Entraînement exercice 2 : questions de la base Soccer (site w3resource)</h2>${W3_INTRO}` +
+      SERIES.map(sr => { const st = store.get(), ok = sr.exos.filter(e => st["ok_" + e]).length;
+        return `<a class="card lvl" href="#serie/${sr.id}"><b>${sr.titre}</b><span>${ok}/${sr.exos.length}</span><div class="bar"><i style="width:${100 * ok / sr.exos.length}%"></i></div></a>`; }).join("");
+  },
+  serie(id) {
+    const sr = SERIES.find(x => x.id === id), i = SERIES.indexOf(sr);
+    setTimeout(() => { const box = $("#exos"); sr.exos.forEach((e, k) => box.appendChild(exoCard(exo(e), k + 1))); startTimer(sr.duree); });
+    return `<p><a href="#sujets">← Sujets blancs</a></p><h1>${sr.titre}</h1>
+<div class="timer card"><span id="clock"></span> <button id="tgo">Démarrer</button> <button id="treset">Recommencer</button></div>
+<div class="card"><p>${sr.intro}</p><p class="muted">Base « Soccer » (même schéma que l'annale). Chrono indicatif : ${sr.duree / 60} min. Clique « Voir les tables » sous une question pour revoir les colonnes.</p></div><div id="exos"></div>
+<p class="nav">${i > 0 ? `<a href="#serie/${SERIES[i - 1].id}">← Série précédente</a>` : "<span></span>"} ${i < SERIES.length - 1 ? `<a href="#serie/${SERIES[i + 1].id}">Série suivante →</a>` : `<a href="#sujets">Retour aux sujets →</a>`}</p>`;
   },
   sujet(id) {
     const s = SUJETS.find(x => x.id === id);
-    setTimeout(() => { const box = $("#ex2"); s.ex2.exos.forEach((e, k) => box.appendChild(exoCard(exo(e), k + 1))); startTimer(); });
+    setTimeout(() => { const box = $("#ex2"); s.ex2.exos.forEach((e, k) => box.appendChild(exoCard(exo(e), k + 1))); startTimer(5400); });
     const pts = (key, list) => `<div class="pts">${list.map((p, k) => `<label><input type="checkbox" data-k="${key}_${k}" ${store.get()["pt_" + key + "_" + k] ? "checked" : ""}> ${p}</label>`).join("")}</div>`;
     return `<p><a href="#sujets">← Sujets</a></p><h1>${s.titre}</h1>
-<div class="timer card"><span id="clock">1:30:00</span> <button id="tgo">Démarrer</button> <button id="treset">Remettre à 1h30</button></div>${s.intro}
+<div class="timer card"><span id="clock">1:30:00</span> <button id="tgo">Démarrer</button> <button id="treset">Recommencer</button></div>${s.intro}
 <h2>Exercice 1 — Modélisation (${s.ex1.bareme} pts)</h2><div class="card">${s.ex1.enonce}<p class="muted">Fais-le sur papier, puis :</p>
 <details><summary>Voir le corrigé</summary>${DIAG[s.id] ? chenSVG(DIAG[s.id]) : ""}${s.ex1.corrige}<h4>Auto-évaluation</h4>${pts(s.id + "e1", s.ex1.points)}</details></div>
 <h2>Exercice 2 — SQL (${s.ex2.bareme} pts)</h2><div class="card">${s.ex2.enonce}</div><div id="ex2"></div>
@@ -301,11 +312,12 @@ function chenSVG(d) {
 <p class="muted">Notation Chen : rectangle = entité, losange = association (attributs d'association en italique), cardinalités sur les traits, identifiant souligné. Ici les attributs sont listés dans l'entité pour la lisibilité ; <b>sur ta copie, dessine-les en ovales</b> reliés à l'entité.</p></div>`;
 }
 
-let timer = null, remain = 5400;
-function startTimer() {
+let timer = null, remain = 5400, total = 5400;
+function startTimer(t) {
+  total = remain = t || 5400;
   const c = $("#clock"); const show = () => c.textContent = `${Math.floor(remain / 3600)}:${String(Math.floor(remain % 3600 / 60)).padStart(2, "0")}:${String(remain % 60).padStart(2, "0")}`; show();
   $("#tgo").onclick = e => { if (timer) { clearInterval(timer); timer = null; e.target.textContent = "Reprendre"; } else { timer = setInterval(() => { remain = Math.max(0, remain - 1); show(); if (!remain) { clearInterval(timer); timer = null; c.textContent = "Temps écoulé !"; } }, 1000); e.target.textContent = "Pause"; } };
-  $("#treset").onclick = () => { clearInterval(timer); timer = null; remain = 5400; show(); $("#tgo").textContent = "Démarrer"; };
+  $("#treset").onclick = () => { clearInterval(timer); timer = null; remain = total; show(); $("#tgo").textContent = "Démarrer"; };
 }
 document.addEventListener("change", e => { if (e.target.dataset.k && e.target.type === "checkbox") store.set("pt_" + e.target.dataset.k, e.target.checked); });
 document.addEventListener("input", e => { if (e.target.classList.contains("free")) store.set("free_" + e.target.dataset.k, e.target.value); });
@@ -329,8 +341,8 @@ function importProgress(input) {
 /* ---------- Mises à jour du site ----------
    version.json (à côté de index.html) contient la version publiée. Si elle change pendant que la page
    est ouverte, on propose de réactualiser. La progression (localStorage "bd70") n'est jamais touchée. */
-const APP_VERSION = "2026-11-09";
-const NOUVEAUTES = "Conception et Théorie refaites au format de l'annale : méthode pour répondre, exercice guidé, questions ouvertes corrigées, schémas dessinés dans les corrigés. Sauvegarde de la progression dans un fichier.";
+const APP_VERSION = "2026-11-09.2";
+const NOUVEAUTES = "Dans « Sujets blancs » : 3 séries de 47 questions SQL tirées du site d'où vient la base Soccer de l'annale (w3resource), traduites et auto-corrigées. Conception et Théorie au format de l'annale.";
 function banner(html, cls) {
   let b = $("#banner"); if (!b) { b = document.createElement("div"); b.id = "banner"; document.body.insertBefore(b, $("main")); }
   b.className = cls; b.innerHTML = html + ` <button onclick="this.parentNode.remove()" aria-label="Fermer">✕</button>`;
@@ -355,7 +367,7 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden) chec
 
 function route() {
   const [p, arg] = (location.hash.slice(1) || "accueil").split("/");
-  document.querySelectorAll("nav a").forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + (p === "niveau" ? "parcours" : p === "sujet" ? "sujets" : p)));
+  document.querySelectorAll("nav a").forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + (p === "niveau" ? "parcours" : (p === "sujet" || p === "serie") ? "sujets" : p)));
   if (timer) { clearInterval(timer); timer = null; }
   $("#main").innerHTML = (PAGES[p] || PAGES.accueil)(arg); window.scrollTo(0, 0);
 }
