@@ -160,11 +160,14 @@ const PAGES = {
 <p>Durée 1h30, seul document : <b>une feuille A4 recto-verso manuscrite</b> → <a href="#a4">modèle à recopier</a>.</p></div>
 <div class="card"><h3>Plan conseillé (tu pars de peu de bases)</h3><ol>
 <li><a href="#parcours">Parcours SQL</a> niveaux 1 → 11, dans l'ordre (≈ 72 exercices auto-corrigés). Lis la mini-leçon, essaie, utilise l'indice, puis Vérifier.</li>
-<li><a href="#conception">Conception</a> : méthode + exercices de cardinalités.</li>
-<li><a href="#theorie">Théorie</a> : 33 QCM expliqués pour l'exercice 3.</li>
+<li><a href="#conception">Conception</a> : méthode pour répondre, un exercice guidé pas à pas, puis 4 exercices au format de l'annale corrigés avec schéma.</li>
+<li><a href="#theorie">Théorie</a> : méthode de réponse pour chaque type de question de l'exercice 3, 17 questions ouvertes corrigées, puis des QCM de révision rapide.</li>
 <li><a href="#sujets">Sujets blancs</a> : l'annale A23 puis 3 sujets inédits du même format, chrono 1h30.</li></ol>
 <p id="prog" class="big">${a}/${b} exercices SQL réussis</p>
 <div class="btns">${(() => { const st = store.get(); const nx = EXOS.find(e => e.lvl !== "S" && !st["ok_" + e.id]); return nx ? `<a class="btn primary" href="#niveau/${nx.lvl}">▶ Reprendre : ${LEVELS.find(l => l.id === nx.lvl).titre}</a>` : `<a class="btn primary" href="#sujets">Parcours terminé 🎉 → sujets blancs</a>`; })()}
+</div></div>
+<div class="card"><h3>Ma progression</h3><p class="muted">Elle est enregistrée <b>dans ce navigateur</b> (et conservée lors des mises à jour du site). Pour la garder en changeant d'appareil ou de navigateur, sauvegarde-la dans un fichier puis restaure-la de l'autre côté.</p>
+<div class="btns"><button onclick="exportProgress()">💾 Sauvegarder dans un fichier</button><label class="btn file">📂 Restaurer un fichier<input type="file" accept=".json,application/json" hidden onchange="importProgress(this)"></label>
 <button onclick="if(confirm('Effacer toute ta progression, tes requêtes et tes réponses enregistrées ?')){try{localStorage.removeItem('bd70')}catch{}route()}">Remettre à zéro</button></div></div>`;
   },
   parcours() {
@@ -180,13 +183,25 @@ const PAGES = {
 <p class="nav">${i > 0 ? `<a href="#niveau/${LEVELS[i - 1].id}">← Niveau précédent</a>` : ""} ${i < LEVELS.length - 1 ? `<a href="#niveau/${LEVELS[i + 1].id}">Niveau suivant →</a>` : `<a href="#sujets">Passer aux sujets blancs →</a>`}</p>`;
   },
   conception() {
-    return `<h1>Conception (exercice 1, 7 pts)</h1><div class="card lecon">${CONCEPTION_METHODE}</div>
-<h2>Entraînement : quelle cardinalité ?</h2>${qcmList(CARDI.map(c => ({ id: c.id, q: c.q, o: c.o, a: c.a, e: c.t })))}
-<div class="card"><p>Pour t'entraîner à <b>dessiner</b> un schéma complet : fais l'exercice 1 de chaque <a href="#sujets">sujet blanc</a> sur papier, puis compare au corrigé et coche les points obtenus. Revois aussi les diagrammes du dossier « Exercice de conception » (TD7).</p></div>`;
+    const g = CONCEPTION_GUIDE;
+    return `<h1>Conception (exercice 1, 7 pts)</h1>
+<p>À l'examen : un énoncé (≈ 10 lignes) et « <i>Dessiner le schéma entité-association… vous indiquerez la notation choisie</i> ». Pas de QCM : il faut <b>produire un schéma</b>. Travaille dans l'ordre : <a href="#conception" data-go="c1">1. Méthode</a> → <a href="#conception" data-go="c2">2. Exercice guidé</a> → <a href="#conception" data-go="c3">3. Exercices type annale</a> → <a href="#conception" data-go="c4">4. Échauffement cardinalités</a>.</p>
+<h2 id="c1">1. Méthode pour répondre</h2><div class="card lecon">${CONCEPTION_REPONDRE}<details><summary>Rappel : notation de Chen et passage au schéma relationnel</summary>${CONCEPTION_METHODE}</details></div>
+<h2 id="c2">2. ${g.titre}</h2><div class="card">${g.enonce}<p class="muted">Réponds étape par étape dans les cadres (ou sur papier), puis ouvre la correction de l'étape avant de passer à la suivante.</p></div>
+${g.etapes.map((e, k) => openQ(`${g.id}_s${k}`, e.q, "", e.r.startsWith("__DIAG__") ? chenSVG(DIAG[e.r.slice(8)]) + `<pre>${e.schema}</pre>` : e.r, null)).join("")}
+<h2 id="c3">3. Exercices au format de l'annale</h2>
+<p>Comme à l'examen : lis l'énoncé, fais ton schéma <b>sur papier</b> (brouillon possible dans le cadre), puis compare au corrigé et coche ce que tu as. Les 4 sujets blancs contiennent aussi un exercice 1 corrigé avec schéma : ${SUJETS.map(s => `<a href="#sujet/${s.id}">${s.id}</a>`).join(", ")}.</p>
+${CONCEPTION_EXOS.map(x => openQ(x.id, x.titre, x.enonce, chenSVG(DIAG[x.diag]) + x.corrige + `<h4>Schéma relationnel déduit</h4><pre>${x.schema}</pre>`, x.points, "Brouillon : entités, associations, cardinalités…")).join("")}
+<h2 id="c4">4. Échauffement : quelle cardinalité ?</h2>${qcmList(CARDI.map(c => ({ id: c.id, q: c.q, o: c.o, a: c.a, e: c.t })))}`;
   },
   theorie() {
-    const ths = [...new Set(QCM.map(q => q.th))];
-    return `<h1>Théorie (exercice 3, 6 pts)</h1><p>Clique une réponse : l'explication s'affiche. Ces notions tombent dans l'exercice 3 (normalisation, optimisation, automatisation).</p>` + ths.map(t => `<h2>${t}</h2>` + qcmList(QCM.filter(q => q.th === t))).join("");
+    const ths = [...new Set(THEORIE_EXOS.map(q => q.th))], qth = [...new Set(QCM.map(q => q.th))];
+    return `<h1>Théorie (exercice 3, 6 pts)</h1>
+<p>À l'examen, l'exercice 3 est fait de <b>questions ouvertes</b> (normalisation, 3 stratégies d'optimisation avec SQL, choisir procédure / fonction / déclencheur / événement). Ordre de travail : <a href="#theorie" data-go="t1">1. Méthode</a> → <a href="#theorie" data-go="t2">2. Exercices type annale</a> → <a href="#theorie" data-go="t3">3. QCM de révision rapide</a>.</p>
+<h2 id="t1">1. Méthode pour répondre</h2><div class="card lecon">${THEORIE_REPONDRE}</div>
+<h2 id="t2">2. Exercices au format de l'annale</h2><p>Rédige ta réponse comme sur ta copie (elle est enregistrée), puis ouvre le corrigé et coche les points obtenus.</p>
+${ths.map(t => `<h3>${t}</h3>` + THEORIE_EXOS.filter(x => x.th === t).map(x => openQ(x.id, x.titre, x.enonce + `<p><b>${x.q}</b></p>`, x.r, x.points)).join("")).join("")}
+<h2 id="t3">3. Révision rapide (QCM)</h2><p>Pour vérifier le vocabulaire et les définitions. Clique une réponse : l'explication s'affiche.</p>` + qth.map(t => `<h3>${t}</h3>` + qcmList(QCM.filter(q => q.th === t))).join("");
   },
   sujets() {
     return `<h1>Sujets blancs</h1><p>Même format que l'annale A23. Fais-les en conditions réelles : chrono 1h30, ta feuille A4, puis correction.</p>` +
@@ -199,7 +214,7 @@ const PAGES = {
     return `<p><a href="#sujets">← Sujets</a></p><h1>${s.titre}</h1>
 <div class="timer card"><span id="clock">1:30:00</span> <button id="tgo">Démarrer</button> <button id="treset">Remettre à 1h30</button></div>${s.intro}
 <h2>Exercice 1 — Modélisation (${s.ex1.bareme} pts)</h2><div class="card">${s.ex1.enonce}<p class="muted">Fais-le sur papier, puis :</p>
-<details><summary>Voir le corrigé</summary>${s.ex1.corrige}<h4>Auto-évaluation</h4>${pts(s.id + "e1", s.ex1.points)}</details></div>
+<details><summary>Voir le corrigé</summary>${DIAG[s.id] ? chenSVG(DIAG[s.id]) : ""}${s.ex1.corrige}<h4>Auto-évaluation</h4>${pts(s.id + "e1", s.ex1.points)}</details></div>
 <h2>Exercice 2 — SQL (${s.ex2.bareme} pts)</h2><div class="card">${s.ex2.enonce}</div><div id="ex2"></div>
 <h2>Exercice 3 — Optimisation, administration (${s.ex3.bareme} pts)</h2><div class="card">${s.ex3.enonce}</div>
 ${s.ex3.questions.map((q, k) => `<div class="card"><p><b>${q.q}</b></p><textarea class="free" data-k="${s.id}_q${k}" placeholder="Rédige ta réponse ici (enregistrée automatiquement)">${esc(store.get()["free_" + s.id + "_q" + k] || "")}</textarea><details><summary>Voir le corrigé</summary>${q.r}<h4>Auto-évaluation</h4>${pts(s.id + "q" + k, q.points)}</details></div>`).join("")}`;
@@ -232,6 +247,60 @@ function qcmList(list) {
   }));
   return list.map(q => `<div class="card qcm" data-id="${q.id}"><p>${q.q}</p><div class="opts">${q.o.map(o => `<button>${o}</button>`).join("")}</div><div class="expl" hidden></div></div>`).join("");
 }
+/* Question ouverte : énoncé + zone de réponse enregistrée + corrigé + auto-évaluation (clés free_<key>, pt_<key>_n). */
+function openQ(key, titre, enonce, corrige, points, ph) {
+  const st = store.get();
+  const n = points ? points.filter((p, k) => st["pt_" + key + "_" + k]).length : 0;
+  return `<div class="card open${points && n === points.length ? " done" : ""}" data-key="${key}"><p><b>${titre}</b>${points ? ` <span class="score">${n}/${points.length}</span>` : ""}</p>${enonce}
+<textarea class="free" data-k="${key}" placeholder="${ph || "Rédige ta réponse ici (enregistrée automatiquement)"}">${esc(st["free_" + key] || "")}</textarea>
+<details><summary>Voir la correction</summary>${corrige}${points ? `<h4>Auto-évaluation : coche ce que tu avais</h4><div class="pts">${points.map((p, k) => `<label><input type="checkbox" data-k="${key}_${k}" ${st["pt_" + key + "_" + k] ? "checked" : ""}> ${p}</label>`).join("")}</div>` : ""}</details></div>`;
+}
+document.addEventListener("change", e => {
+  const card = e.target.closest && e.target.closest(".card.open"); if (!card || e.target.type !== "checkbox") return;
+  const boxes = card.querySelectorAll(".pts input"), n = [...boxes].filter(b => b.checked).length;
+  const sc = card.querySelector(".score"); if (sc) sc.textContent = `${n}/${boxes.length}`; card.classList.toggle("done", n === boxes.length);
+});
+document.addEventListener("click", e => { const g = e.target.dataset && e.target.dataset.go; if (g) { e.preventDefault(); const t = document.getElementById(g); if (t) t.scrollIntoView({ behavior: "smooth" }); } });
+
+/* Schéma entité-association (notation Chen simplifiée : attributs listés dans l'entité). */
+function chenSVG(d) {
+  const CW = 7.1, box = {}, P = [];
+  for (const [k, e] of Object.entries(d.ents)) {
+    const w = Math.max(k.length * 8.6, ...e.attrs.map(a => a.length * CW)) + 26, h = 30 + e.attrs.length * 16;
+    box[k] = { x: e.x, y: e.y, hw: w / 2, hh: h / 2 };
+  }
+  const edgeRect = (b, dx, dy) => { const t = Math.min(dx ? b.hw / Math.abs(dx) : 1e9, dy ? b.hh / Math.abs(dy) : 1e9); return [b.x + dx * t, b.y + dy * t]; };
+  const card = (x, y, ux, uy, txt) => `<text class="cd" x="${x + ux * 16 - uy * 11}" y="${y + uy * 16 + ux * 11 + 4}" text-anchor="middle">${txt}</text>`;
+  for (const r of d.rels) {
+    const A = box[r.a], B = box[r.b], dw = r.label.length * 7 + 36, dh = 36;
+    if (r.a === r.b) {
+      const mx = A.x, my = A.y - A.hh - 60, l = [A.x - A.hw / 2, A.y - A.hh], rr = [A.x + A.hw / 2, A.y - A.hh];
+      P.push(`<path class="ln" d="M${l[0]},${l[1]} L${l[0]},${my} L${mx - dw / 2},${my}"/><path class="ln" d="M${rr[0]},${rr[1]} L${rr[0]},${my} L${mx + dw / 2},${my}"/>`,
+        `<polygon class="as" points="${mx - dw / 2},${my} ${mx},${my - dh / 2} ${mx + dw / 2},${my} ${mx},${my + dh / 2}"/><text class="al" x="${mx}" y="${my + 4}" text-anchor="middle">${r.label}</text>`,
+        `<text class="cd" x="${l[0] - 18}" y="${l[1] - 8}">${r.ca}</text><text class="cd" x="${rr[0] + 4}" y="${rr[1] - 8}">${r.cb}</text>`);
+      continue;
+    }
+    let dx = B.x - A.x, dy = B.y - A.y; const L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L, off = r.off || 0;
+    const A2 = { ...A, x: A.x - uy * off, y: A.y + ux * off }, B2 = { ...B, x: B.x - uy * off, y: B.y + ux * off };
+    const pa = edgeRect(A2, ux, uy), pb = edgeRect(B2, -ux, -uy), mx = (pa[0] + pb[0]) / 2, my = (pa[1] + pb[1]) / 2;
+    const td = 1 / (Math.abs(ux) / (dw / 2) + Math.abs(uy) / (dh / 2));
+    P.push(`<line class="ln" x1="${pa[0]}" y1="${pa[1]}" x2="${mx - ux * td}" y2="${my - uy * td}"/><line class="ln" x1="${mx + ux * td}" y1="${my + uy * td}" x2="${pb[0]}" y2="${pb[1]}"/>`,
+      `<polygon class="as" points="${mx - dw / 2},${my} ${mx},${my - dh / 2} ${mx + dw / 2},${my} ${mx},${my + dh / 2}"/><text class="al" x="${mx}" y="${my + 4}" text-anchor="middle">${r.label}</text>`,
+      card(pa[0], pa[1], ux, uy, r.ca), card(pb[0], pb[1], -ux, -uy, r.cb));
+    if (r.attrs) {
+      const horiz = Math.abs(ux) > Math.abs(uy);
+      P.push(r.attrs.map((a, i) => horiz ? `<text class="aa" x="${mx}" y="${my + dh / 2 + 14 + i * 13}" text-anchor="middle">${a}</text>` : `<text class="aa" x="${mx + dw / 2 + 6}" y="${my - (r.attrs.length - 1) * 6.5 + i * 13 + 4}">${a}</text>`).join(""));
+    }
+  }
+  for (const [k, e] of Object.entries(d.ents)) {
+    const b = box[k], x0 = b.x - b.hw, y0 = b.y - b.hh;
+    P.push(`<rect class="en" x="${x0}" y="${y0}" width="${b.hw * 2}" height="${b.hh * 2}" rx="3"/><text class="et" x="${b.x}" y="${y0 + 18}" text-anchor="middle">${k}</text><line class="ln" x1="${x0}" y1="${y0 + 25}" x2="${x0 + b.hw * 2}" y2="${y0 + 25}"/>` +
+      e.attrs.map((a, i) => `<text class="at${i < (e.id || 0) ? " id" : ""}" x="${x0 + 10}" y="${y0 + 40 + i * 16}">${a}</text>`).join(""));
+  }
+  return `<div class="diagram"><svg viewBox="0 0 ${d.w} ${d.h}" role="img" aria-label="Schéma entité-association">${P.join("")}</svg>
+<p class="muted">Notation Chen : rectangle = entité, losange = association (attributs d'association en italique), cardinalités sur les traits, identifiant souligné. Ici les attributs sont listés dans l'entité pour la lisibilité ; <b>sur ta copie, dessine-les en ovales</b> reliés à l'entité.</p></div>`;
+}
+
 let timer = null, remain = 5400;
 function startTimer() {
   const c = $("#clock"); const show = () => c.textContent = `${Math.floor(remain / 3600)}:${String(Math.floor(remain % 3600 / 60)).padStart(2, "0")}:${String(remain % 60).padStart(2, "0")}`; show();
@@ -240,6 +309,49 @@ function startTimer() {
 }
 document.addEventListener("change", e => { if (e.target.dataset.k && e.target.type === "checkbox") store.set("pt_" + e.target.dataset.k, e.target.checked); });
 document.addEventListener("input", e => { if (e.target.classList.contains("free")) store.set("free_" + e.target.dataset.k, e.target.value); });
+
+/* ---------- Sauvegarde / restauration de la progression ---------- */
+function exportProgress() {
+  const blob = new Blob([JSON.stringify({ app: "revision-bd70", date: new Date().toISOString(), data: store.get() }, null, 1)], { type: "application/json" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `progression-bd70-${new Date().toISOString().slice(0, 10)}.json`; a.click(); URL.revokeObjectURL(a.href);
+}
+function importProgress(input) {
+  const f = input.files[0]; if (!f) return;
+  f.text().then(t => {
+    const j = JSON.parse(t); const d = j && j.app === "revision-bd70" ? j.data : null;
+    if (!d || typeof d !== "object") throw 0;
+    if (!confirm("Fusionner ce fichier avec ta progression actuelle ? (les exercices réussis des deux côtés sont gardés)")) return;
+    const cur = store.get(); for (const [k, v] of Object.entries(d)) if (!(k in cur) || (v && !cur[k])) cur[k] = v;
+    localStorage.setItem("bd70", JSON.stringify(cur)); route(); alert("Progression restaurée ✔");
+  }).catch(() => alert("Ce fichier n'est pas une sauvegarde de progression BD70.")).finally(() => input.value = "");
+}
+
+/* ---------- Mises à jour du site ----------
+   version.json (à côté de index.html) contient la version publiée. Si elle change pendant que la page
+   est ouverte, on propose de réactualiser. La progression (localStorage "bd70") n'est jamais touchée. */
+const APP_VERSION = "2026-11-09";
+const NOUVEAUTES = "Conception et Théorie refaites au format de l'annale : méthode pour répondre, exercice guidé, questions ouvertes corrigées, schémas dessinés dans les corrigés. Sauvegarde de la progression dans un fichier.";
+function banner(html, cls) {
+  let b = $("#banner"); if (!b) { b = document.createElement("div"); b.id = "banner"; document.body.insertBefore(b, $("main")); }
+  b.className = cls; b.innerHTML = html + ` <button onclick="this.parentNode.remove()" aria-label="Fermer">✕</button>`;
+}
+function checkVersion() {
+  if (location.protocol === "file:") return;
+  fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(j => {
+    if (j && j.version && j.version !== APP_VERSION)
+      banner(`🔄 <b>Mise à jour du site disponible.</b> Réactualise la page pour l'avoir — ta progression est conservée. <button class="primary" onclick="location.replace(location.pathname + '?v=${encodeURIComponent(j.version)}' + location.hash)">Réactualiser</button>`, "upd");
+  }).catch(() => {});
+}
+(function showNews() {
+  const st = store.get(), seen = st.app_version;
+  if (seen !== APP_VERSION) {
+    if (seen || Object.keys(st).some(k => k.startsWith("ok_") || k.startsWith("free_")))
+      setTimeout(() => banner(`✨ <b>Site mis à jour.</b> ${NOUVEAUTES} Ta progression a bien été conservée.`, "news"), 300);
+    store.set("app_version", APP_VERSION);
+  }
+})();
+checkVersion(); setInterval(checkVersion, 5 * 60 * 1000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) checkVersion(); });
 
 function route() {
   const [p, arg] = (location.hash.slice(1) || "accueil").split("/");

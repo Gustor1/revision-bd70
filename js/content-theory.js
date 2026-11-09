@@ -324,19 +324,19 @@ Historisation : table archive + UNION ALL. Sécurité : moindre privilège, mdp 
 </div>`;
 
 window.COUVERTURE = [
-["Modélisation entité-association (Chen/MCD/UML), cardinalités","Annale ex.1 ; TD7 ex.2-3 ; cours slides 211-219 ; images « Exercice de conception »","Conception (méthode + 12 exercices de cardinalités) ; 4 sujets ex.1 avec corrigé"],
+["Modélisation entité-association (Chen/MCD/UML), cardinalités","Annale ex.1 ; TD7 ex.2-3 ; cours slides 211-219 ; images « Exercice de conception »","Conception : méthode de réponse, exercice guidé (TD7 ex.2), 4 exercices type annale avec schéma corrigé (dont TD7 ex.3 et ex.4), cardinalités ; ex.1 des 4 sujets avec schéma"],
 ["Passage modèle → schéma relationnel, héritage","TD7 ex.3 ; cours slide 218-219","Conception (méthode) ; corrigés ex.1 ; exercices CREATE TABLE (L10)"],
-["Normalisation 1NF/2NF/3NF/BCNF","Annale ex.3a ; TD7 ex.4 ; cours slides 167-196","Théorie (QCM Normalisation) ; ex.3a des 4 sujets"],
+["Normalisation 1NF/2NF/3NF/BCNF","Annale ex.3a ; TD7 ex.4 ; cours slides 167-196","Théorie : méthode + 6 questions ouvertes de normalisation ; QCM ; ex.3a des 4 sujets ; Conception (Stim)"],
 ["SELECT, WHERE, DISTINCT, ORDER BY, LIKE, NULL, BETWEEN","TD Quickstart ex.2 ; TD DML ex.1-4","Parcours SQL niveaux 1 à 3"],
 ["Agrégats, GROUP BY, HAVING","TD Quickstart 5 ; TD Optimisation ; annale Q2, Q5","Parcours niveaux 4-5 ; niveau 11"],
 ["Jointures (multiples, auto-jointure, LEFT JOIN), sous-requêtes","TD DML ; TD Quickstart 6 ; annale Q3-Q5","Parcours niveaux 6 à 8 et 11"],
 ["INSERT, UPDATE, DELETE","TD Quickstart 2-4 ; cours DML","Parcours niveau 9"],
 ["DDL : CREATE/ALTER/DROP, contraintes d'intégrité, ON DELETE CASCADE","TD DDL ex.1-3 ; annale Q6 ; cours slides 105-122","Parcours niveau 10 (+ Q6 des 4 sujets) ; QCM Contraintes"],
 ["Vues, tables temporaires","Cours slides 112-113","Exercice e58 ; QCM q21"],
-["Index, FULLTEXT, partitionnement, optimisation des requêtes","Annale ex.3b ; TD Optimisation ; cours slides 124-134, 243-247","Exercice e59 ; QCM Optimisation ; ex.3b des sujets"],
-["Fonctions, procédures, triggers, événements, DELIMITER","Annale ex.3c-d ; TD Automatisation ex.1-3 ; cours slides 135-153","QCM Automatisation ; ex.3c-d des sujets (corrigés écrits)"],
-["Transactions (ACID, COMMIT, ROLLBACK)","TD Automatisation ex.3.5 ; cours slides 159-165","QCM Transactions ; sujet B1 ex.3c"],
-["DCL : GRANT/REVOKE, sécurité, mots de passe hachés","TD DDL ex.3 ; cours slides 155-158, 236-240","QCM q02, q31, q32 ; feuille A4"],
+["Index, FULLTEXT, partitionnement, optimisation des requêtes","Annale ex.3b ; TD Optimisation ; cours slides 124-134, 243-247","Exercice e59 ; Théorie : méthode « 3 stratégies » + 4 questions ouvertes ; QCM ; ex.3b des sujets"],
+["Fonctions, procédures, triggers, événements, DELIMITER","Annale ex.3c-d ; TD Automatisation ex.1-3 ; cours slides 135-153","Théorie : tableau de choix + 5 questions ouvertes avec code ; QCM ; ex.3c-d des sujets"],
+["Transactions (ACID, COMMIT, ROLLBACK)","TD Automatisation ex.3.5 ; cours slides 159-165","Théorie : question ouverte « virement » ; QCM ; sujet B1 ex.3c"],
+["DCL : GRANT/REVOKE, sécurité, mots de passe hachés","TD DDL ex.3 ; cours slides 155-158, 236-240","Théorie : question ouverte « droits d'accès » ; QCM q02, q31, q32 ; feuille A4"],
 ["Cas d'utilisation UML (TD7 ex.1), frameworks web, Spring (fin du cours)","TD7 ex.1 ; cours slides 205-210 et 250-261","<i>Non couvert par des exercices</i> : absent de l'annale A23 (que le prof annonce similaire)"]
 ];
 

@@ -43,19 +43,26 @@ button.good{background:var(--ok);color:#fff}button.bad{background:var(--ko);colo
 .timer{position:sticky;top:52px;z-index:4;display:flex;gap:8px;align-items:center}#clock{font:600 1.3rem monospace;margin-right:auto}
 .nav{display:flex;justify-content:space-between}select{padding:6px;border-radius:8px;font-size:15px}
 details summary{cursor:pointer;color:var(--pri);margin-top:6px}
+.diagram{overflow-x:auto;margin:10px 0}.diagram svg{width:100%;min-width:660px;height:auto;display:block}
+.diagram .en{fill:var(--card);stroke:var(--txt);stroke-width:1.5}.diagram .as{fill:var(--code);stroke:var(--pri);stroke-width:1.5}.diagram .ln{stroke:var(--txt);stroke-width:1.2;fill:none}
+.diagram text{fill:var(--txt);font:12px system-ui,sans-serif}.diagram .et{font-weight:700;font-size:13px}.diagram .id{text-decoration:underline;font-weight:600}.diagram .al{font-size:12px;fill:var(--pri);font-weight:600}.diagram .cd{font-weight:700;fill:var(--ko);font-size:12px}.diagram .aa{font-style:italic;font-size:11px;fill:var(--mut)}
+table.mini{display:block;max-width:100%;overflow-x:auto}
+@media (max-width:700px){.diagram::before{content:"↔ Fais glisser le schéma pour le voir en entier";display:block;font-size:13px;color:var(--mut);margin-bottom:4px}}
+.score{float:right;color:var(--mut);font-weight:600}label.btn.file{border:1px solid var(--bd);cursor:pointer;color:var(--txt)}
+#banner{position:sticky;top:0;z-index:10;padding:10px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;font-size:15px}#banner.upd{background:#e0a000;color:#000}#banner.news{background:var(--pri);color:#fff}#banner button{padding:4px 10px}
 @media print{header,button,.warn{display:none}body{background:#fff;color:#000}.a4 pre{font-size:9px}}
 </style></head>
 <body><header><nav>
 <a href="#accueil">Accueil</a><a href="#parcours">Parcours SQL</a><a href="#conception">Conception</a><a href="#theorie">Théorie</a><a href="#sujets">Sujets blancs</a><a href="#bac">Bac à sable</a><a href="#a4">Feuille A4</a><a href="#couverture">Couverture</a><a href="#sites">Sites</a>
 </nav></header>
 <main id="main"><p>Chargement du moteur SQL…</p></main>
-<script src="js/dbs.js?v=5"></script><script src="js/content-sql.js?v=5"></script><script src="js/content-theory.js?v=5"></script>
+<script src="js/dbs.js?v=6"></script><script src="js/content-sql.js?v=6"></script><script src="js/content-theory.js?v=6"></script><script src="js/content-methode.js?v=6"></script>
 <script>
 /* Moteur SQL : copie locale (vendor/, hors-ligne) sinon CDN. */
 (function load(srcs){
   const s = document.createElement("script"); const base = srcs[0];
   s.src = base + "sql-wasm.js";
-  const app = () => { const a = document.createElement("script"); a.src = "js/app.js?v=5"; document.body.appendChild(a); };
+  const app = () => { const a = document.createElement("script"); a.src = "js/app.js?v=6"; document.body.appendChild(a); };
   s.onload = () => {
     window.SQLJS_BASE = base;
     if (location.protocol === "file:" && base === "vendor/") {   // double-clic : wasm embarqué
