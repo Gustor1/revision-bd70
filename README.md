@@ -2,7 +2,6 @@
 
 Application web de révision pour l'examen final de BD70 (bases de données) : parcours SQL progressif auto-corrigé, conception entité-association, théorie (normalisation, optimisation, automatisation), sujets blancs au format de l'annale A23.
 
-**Site :** https://gustor1.github.io/revision-bd70/
 
 - Le SQL s'exécute dans le navigateur (SQLite via [sql.js](https://github.com/sql-js/sql.js), avec une petite couche de compatibilité MySQL).
 - Aucune donnée n'est envoyée : la progression est enregistrée dans le navigateur (localStorage).
